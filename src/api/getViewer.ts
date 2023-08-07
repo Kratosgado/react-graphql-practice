@@ -15,7 +15,7 @@ type GetViewerResponse = {
    };
 };
 
-export async function getViewr() {
+export async function getViewer() {
    const response = await fetch(
       process.env.REACT_APP_GITHUB_API_URL!,
       {
