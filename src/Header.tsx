@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { getViewer } from './api/getViewer'
+import { GET_VIEWER_QUERY, getViewer } from './api/getViewer'
 
 export const Header = () => {
-   const { data, isLoading } = useQuery(['viewer'], getViewer);
+   const { isLoading, data } = useQuery(['viewer'], () => getViewer(GET_VIEWER_QUERY));
 
    if (isLoading || data === undefined) {
       return <div>...</div>
