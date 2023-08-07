@@ -1,18 +1,26 @@
-type ViewerData = {
-   name: string;
-   avatarUrl: string;
- };
+import { ViewerData } from "./types";
+
  
  type GetViewerResponse = {
    data: {
      viewer: ViewerData;
    };
- };
+};
+ 
+export const GET_VIEWER_QUERY = `
+query {
+  viewer {
+    name
+    avatarUrl
+  }
+}
+`;
+
+
  
  export async function getViewer(query: string, variables = {}) {
     const url = process.env.REACT_APP_GITHUB_URL!
     const token = process.env.REACT_APP_GITHUB_PAT;
-
 
     const response = await fetch(url, {
      method: 'POST',
@@ -56,13 +64,3 @@ function assertIsGetViewerResponse(response: any): asserts response is GetViewer
      throw new Error('viewer avatarUrl is not a string');
    }
  }
- // Example query
- export const GET_VIEWER_QUERY = `
-   query {
-     viewer {
-       name
-       avatarUrl
-     }
-   }
- `;
- 
