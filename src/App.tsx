@@ -1,17 +1,22 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { Header } from './Header';
 import { RepoPage } from './repoPage/RepoPage';
 
 
-const queryClient = new QueryClient();
+const queryClient = new ApolloClient({
+  uri: process.env.REACT_APP_GITHUB_URL!,
+  cache: new InMemoryCache(),
+  headers: {
+    authorization: `Bearer ${process.env.REACT_APP_GITHUB_PAT}`
+  }
+});
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <ApolloProvider client={queryClient}>
       <Header />
       <RepoPage />
-    </QueryClientProvider>
+    </ApolloProvider>
   )
 }
 

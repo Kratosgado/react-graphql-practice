@@ -1,6 +1,7 @@
+import { gql } from "@apollo/client";
 import { RepoData, SearchCriteria } from "./types";
 
-export const GET_REPO = `
+export const GET_REPO = gql`
    query GetRepo($org: String!, $repo: String!){
       repository(owner: $org, name: $repo){
          id
@@ -14,32 +15,8 @@ export const GET_REPO = `
    }
 `
 
-type GetRepoResponse = {
-   data: RepoData
-}
 
-export async function getRepo(searchCriteria:SearchCriteria) {
-   const response = await fetch(
-      process.env.REACT_APP_GITHUB_URL!, {
-      method: 'POST',
-      body: JSON.stringify({
-         query: GET_REPO,
-         variables: {
-            org: searchCriteria.org,
-            repo: searchCriteria.repo
-         },
-      }),
-      headers: {
-         'Content-Type': 'application/json',
-         Authorization: `bearer ${process.env.REACT_APP_GITHUB_PAT}`
-      },
-   }
-   );
-   const body = (await response.json()) as GetRepoResponse;
-   return body.data
-}
-
-
+/*
 function assertIsGetRepoResponse(response: any): asserts response is GetRepoResponse {
    if (typeof response !== 'object' || response === null) {
      throw new Error("response isn't an object");
@@ -93,3 +70,4 @@ function assertIsGetRepoResponse(response: any): asserts response is GetRepoResp
      throw new Error('repository stargazers totalCount is not a number');
    }
  }
+ */

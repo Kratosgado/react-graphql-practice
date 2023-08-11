@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
-import { GET_VIEWER_QUERY, getViewer } from './api/getViewer'
+import { useQuery } from '@apollo/client';
+import { GET_VIEWER_QUERY } from './api/getViewer'
 
 export const Header = () => {
-   const { isLoading, data } = useQuery(['viewer'], () => getViewer(GET_VIEWER_QUERY));
+   const { loading: isLoading, data } = useQuery(GET_VIEWER_QUERY);
 
    if (isLoading || data === undefined) {
       return <div>...</div>

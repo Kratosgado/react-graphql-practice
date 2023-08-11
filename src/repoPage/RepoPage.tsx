@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import {
-   useQuery, useMutation, useQueryClient
-} from '@tanstack/react-query'
+   useLazyQuery, useMutation, useApolloClient
+} from '@apollo/client'
 import { RepoData, SearchCriteria } from '../api/types';
-import { getRepo } from '../api/getRepo';
-import { starRepo } from '../api/starRepo';
+import { GET_REPO } from '../api/getRepo';
+import { STAR_REPO } from '../api/starRepo';
 import { SearchRepoForm } from './SearchRepoForm';
 import { FoundRepo } from './FoundRepo';
 import { StarRepoButton } from './StarRepoButton';
@@ -12,38 +12,31 @@ import { StarRepoButton } from './StarRepoButton';
 export function RepoPage() {
    const [searchCriteria, setSearchCriteria] = useState<SearchCriteria | undefined>();
 
-   const { data } = useQuery(
-      ['repo', searchCriteria],
-      () => getRepo(searchCriteria as SearchCriteria),
-      {
-         enabled: searchCriteria !== undefined,
-      }
-   );
+   const [getRepo, { data }] = useLazyQuery(GET_REPO);
 
-   const queryClient = useQueryClient();
-   const { mutate } = useMutation(starRepo, {
-      onSuccess: () => {
-         queryClient.setQueriesData<RepoData>(
-            ['repo', searchCriteria],
-            (repo) => {
-               if (repo === undefined) {
-                  return undefined;
-               }
-               return {
-                  ...repo,
+   const queryClient = useApolloClient();
+   const [starRepo] = useMutation(STAR_REPO, {
+      onCompleted: () => {
+         queryClient.cache.writeQuery({
+            query: GET_REPO,
+            data: {
+               repository: {
+                  ...data.repository,
                   viewerHasStarred: true,
-               };
-            }
-         );
+               },
+            },
+            variables: searchCriteria,
+         });
       }
    });
 
    function handleSearch(search: SearchCriteria) {
+      getRepo({ variables: { ...search } });
       setSearchCriteria(search)
    }
    function handleStarClick() {
       if (data) {
-         mutate(data.repository.id);
+         starRepo({variables: {repoId: data.repository.id}})
       }
    }
 
